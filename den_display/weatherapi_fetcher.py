@@ -34,7 +34,7 @@ async def get_current_weather(api_key: str, location: str) -> dict:
 
     return weather
 
-def _get_rain_icon(precipitation):
+def _get_rain_icon(precipitation: float) -> str:
     if precipitation == 0.0:
         icon = 'droplet-slash'
     else:
@@ -42,7 +42,7 @@ def _get_rain_icon(precipitation):
 
     return icon
 
-def _get_temperature_icon(temperature):
+def _get_temperature_icon(temperature: float) -> str:
     if temperature < 5:
         icon = 'temperature-low'
     elif temperature < 4:
@@ -58,7 +58,7 @@ def _get_temperature_icon(temperature):
 
     return icon
 
-def _get_condition_icon(code, phase):
+def _get_condition_icon(code: int, phase: int) -> str:
     if phase == 1:
         phase_text = 'sun'
     else:
