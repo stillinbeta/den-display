@@ -1,17 +1,17 @@
 import logging
-import requests
+import aiohttp
 
 
 # https://www.weatherapi.com/docs/weather_conditions.json
 API_URL_SCAFFOLD = "https://api.weatherapi.com/v1/{0}.json"
 
 
-def get_current_weather():
+async def get_current_weather(api_key: str, location: str) -> dict:
     query = {
-        'q': '49.22,-123.10'
+        'q': location
     }
 
-    response = _get_weather('current', query)
+    response = await _get_weather('current', query, api_key)
 
     logging.debug(f'Retrieved weather data: {response}')
 
@@ -86,15 +86,11 @@ def _get_condition_icon(code, phase):
     return icon
 
 
-def _get_weather(period, query):
+async def _get_weather(period: str, query: dict, api_key: str) -> dict:
     url = API_URL_SCAFFOLD.format(period)
     # HERE
-    auth = { 'key': 'X' }
+    auth = { 'key': api_key}
 
-    response = requests.get(url, {**auth, **query})
-
-    return response.json()
-
-
-if __name__ == '__main__':
-    print(get_current_weather())
+    async with aiohttp.ClientSession() as s:
+            async with s.get(url, params={**auth, **query}) as r:
+                return await r.json()

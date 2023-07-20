@@ -1,2 +1,4 @@
 config.py
 nest-display/*
+*.pyc
+/.envrc
