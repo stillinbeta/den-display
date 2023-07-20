@@ -1,7 +1,8 @@
 from datetime import date, datetime
 from datetime import timedelta
 import logging
-import requests
+import aiohttp
+import asyncio
 
 
 # Many thanks to https://github.com/bachya/aiorecollect for the key info needed
@@ -10,7 +11,7 @@ import requests
 API_URL_SCAFFOLD = "https://api.recollect.net/api/places/{0}/services/{1}/events"
 
 
-def get_schedule(place, service):
+async def get_schedule(place: str, service: str) -> dict:
     today = date.today()
     three_weeks = today + timedelta(days=21)
 
@@ -20,8 +21,9 @@ def get_schedule(place, service):
         'before': str(three_weeks)
     }
 
-    resp = requests.get(url=url, params=params)
-    data = resp.json()
+    async with aiohttp.ClientSession() as s:
+        async with s.get(url, params=params) as r:
+            data = await r.json()
 
     logging.debug(f'Retrieved garbage data: {data}')
 
@@ -61,7 +63,3 @@ def _convert_date(date_string):
         friendly_date = date_object.strftime("%B %-d")
 
     return friendly_date
-
-
-if __name__ == '__main__':
-    print(get_schedule())

@@ -1,29 +1,40 @@
-from datetime import datetime
+import asyncio
+import os
 import logging
+import tomllib
 
-from flask import Flask, render_template
+from quart import Quart, render_template
 
-from lib import garbage_fetcher, weather_fetcher
-
+from lib import garbage_fetcher # , weather_fetcher
 
 logging.basicConfig(level=logging.DEBUG)
-app = Flask(__name__)
+app = Quart(__name__)
 
 
 @app.errorhandler(500)
-def page_not_found(e):
-    return render_template('500.html'), 500
+async def page_not_found(e):
+    return await render_template('500.html'), 500
 
 
 @app.route("/")
-def hello_world():
-    # HERE
-    garbage = garbage_fetcher.get_schedule('X', '193')
+async def hello_world() -> str:
+    garbage = await garbage_fetcher.get_schedule(app.config["GARBAGE_LOCATION"], '193')
 
-    weather = weather_fetcher.get_current_weather()
+    # weather = await weather_fetcher.get_current_weather()
 
-    return render_template(
+    return await render_template(
         'index.html',
         **garbage,
-        **weather
+        # **weather
     )
+
+def get_config() -> dict[str, str]:
+    return {
+        'GARBAGE_LOCATION': os.environ['GARBAGE_LOCATION'],
+    }
+
+app.config.from_mapping(get_config())
+
+
+if __name__ == "__main__":
+    app.run()
