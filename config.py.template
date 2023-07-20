@@ -1,0 +1,8 @@
+GARBAGE_PLACE = 'X'
+GARBAGE_SERVICE = '193'
+
+# Must be to exactly two decimal places.
+LATITUDE = 'XX.XX'
+LONGITUDE = 'XX.XX'
+
+WEATHER_API_KEY='X'
